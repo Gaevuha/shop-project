@@ -9,8 +9,12 @@ export const fetchCategory = async () => {
     console.log('Категорії:', result.data);
     return result.data;
   } catch (error) {
+  if (error instanceof Error) {
     console.error('Помилка при завантаженні категорій:', error.message);
-    throw error;
+  } else {
+    console.error('Сталася невідома помилка:', error);
   }
+  throw error;
+}
 };
 
