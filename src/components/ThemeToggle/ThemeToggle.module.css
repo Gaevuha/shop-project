@@ -27,6 +27,11 @@
   background-color: #265e5e;
 }
 
+/* Зміщення кружечка вправо при активному стані */
+.theme input:checked + .theme-toggle::before {
+  left: calc(100% - 4% - 17px); /* або просто left: 55%; */
+}
+
 .theme-toggle::before {
   content: '';
   width: 17px;
