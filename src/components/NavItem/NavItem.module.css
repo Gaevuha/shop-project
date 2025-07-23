@@ -9,13 +9,13 @@
   gap: 5px;
   font-weight: 500;
   letter-spacing: 0.02em;
-  transition: 200ms ease-in;
+  transition: color 0.3s ease;
   color: #213538;
 }
 
 .nav__link:hover,
 .nav__link:focus {
-  color: #265e5e;
+  color: #9ca8b3;
 }
 
 .nav__link::after {

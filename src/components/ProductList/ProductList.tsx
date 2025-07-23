@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import type { Product } from '../../types/product';
 import styles from './ProductList.module.css';
+import Modal from '../Modal/Modal';
 
 interface Props {
   activeCategory: string;
@@ -8,19 +10,30 @@ interface Props {
 }
 
 export default function ProductList({ products }: Props) {
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const openModal = (product: Product) => setSelectedProduct(product);
+  const closeModal = () => setSelectedProduct(null);
+
   return (
-    <ul className={styles.products}>
-      {products.map(({ id, thumbnail, description, title, brand, category, price }) => (
-        <li key={id} className={styles.products__item}>
-          <img className={styles.products__image} src={thumbnail} alt={description} />
-          <p className={styles.products__title}>{title}</p>
-          <p className={styles.products__brand}>
-            <span className={styles['products__brand--bold']}>Brand: {brand}</span>
-          </p>
-          <p className={styles.products__category}>Category: {category}</p>
-          <p className={styles.products__price}>Price: {price} $</p>
-        </li>
-      ))}
-    </ul>
+    <>
+      <ul className={styles.products}>
+        {products.map(product => (
+          <li
+            key={product.id}
+            className={styles.products__item}
+            onClick={() => openModal(product)}
+          >
+            <img className={styles.products__image} src={product.thumbnail} alt={product.description} />
+            <p className={styles.products__title}>{product.title}</p>
+            <p className={styles.products__brand}>
+              <span className={styles['products__brand--bold']}>Brand: {product.brand}</span>
+            </p>
+            <p className={styles.products__category}>Category: {product.category}</p>
+            <p className={styles.products__price}>Price: {product.price} $</p>
+          </li>
+        ))}
+      </ul>
+      {selectedProduct && <Modal product={selectedProduct} onClose={closeModal} />}
+    </>
   );
 }

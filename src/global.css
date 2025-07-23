@@ -102,8 +102,6 @@ img {
 .header {
   padding: 20px 0;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  background-color: var(--bg-color);
-  color: var(--text-color);
 }
 
 .header__container {
@@ -118,4 +116,13 @@ img {
   justify-content: center;
 }
 
-
+.footer {
+  padding-top: 30px;
+  padding-bottom: 30px;
+  box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+}
+.footer__container {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
