@@ -1,15 +1,18 @@
 import NavItem from '../NavItem/NavItem';
+import { useCart } from '../../hooks/useCart';
+import { useWishlist } from '../../hooks/useWishlist';
 import styles from './Navigation.module.css';
 
-export default function Navigation() {
+export default function Nav() {
+  const { cartItems } = useCart();
+  const { wishlistItems } = useWishlist();
+
   return (
-    <nav className={styles.nav}>
-      <ul className={styles['nav__list']}>
-        <NavItem to="/" label="Дім" end />
-        <NavItem to="/cart" label="Кошик" count={0} dataCountAttr="data-cart-count" />
-        <NavItem to="/wishlist" label="Перелік бажань" count={0} dataCountAttr="data-wishlist-count" />
-      </ul>
-    </nav>
+    <ul className={styles.nav__list}>
+      <NavItem to="/" label="Дім" end />
+      <NavItem to="/cart" label="Кошик" count={cartItems.length} />
+      <NavItem to="/wishlist" label="Перелік бажань" count={wishlistItems.length} />
+      {/* інші NavItem */}
+    </ul>
   );
 }
-

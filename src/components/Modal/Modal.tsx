@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import type { Product } from '../../types/product';
 import styles from './Modal.module.css';
+import { useCart } from '../../hooks/useCart';
 
 interface ModalProps {
   product: Product;
@@ -9,6 +10,8 @@ interface ModalProps {
 }
 
 export default function Modal({ product, onClose }: ModalProps) {
+  const { addToCart } = useCart();
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -22,6 +25,11 @@ export default function Modal({ product, onClose }: ModalProps) {
       document.body.style.overflow = 'auto';
     };
   }, [onClose]);
+
+  const handleAddToCart = () => {
+    addToCart(product);
+    onClose();
+  };
 
   return ReactDOM.createPortal(
     <div
@@ -76,6 +84,7 @@ export default function Modal({ product, onClose }: ModalProps) {
           <button
             className={`${styles.modalProduct__btn} ${styles['modalProduct__btn--cart']}`}
             type="button"
+            onClick={handleAddToCart}
           >
             Add to Cart
           </button>

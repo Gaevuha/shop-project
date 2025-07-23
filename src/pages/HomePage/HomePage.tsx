@@ -5,14 +5,12 @@ import Loader from '../../components/Loader/Loader';
 import CategoryFilter from '../../components/CategoryFilter/CategoryFilter';
 import ProductList from '../../components/ProductList/ProductList';
 import Pagination from '../../components/Pagination/Pagination';
-
 import {
   fetchCategory,
   fetchProducts,
   fetchProductsByCategory,
   searchUserProducts,
 } from '../../services/productService';
-
 import styles from './HomePage.module.css';
 
 const ITEMS_PER_PAGE = 12;
@@ -28,7 +26,6 @@ export default function HomePage() {
   const { searchQuery } = useOutletContext<OutletContextType>();
   const trimmedSearchQuery = searchQuery.trim();
 
-  // Скидаємо сторінку при зміні категорії
   useEffect(() => {
     setCurrentPage(1);
   }, [activeCategory, trimmedSearchQuery]);
@@ -65,6 +62,8 @@ export default function HomePage() {
 
   if (isError) return <p>❌ Помилка при завантаженні даних</p>;
 
+  const hasNoProducts = productsData?.products?.length === 0;
+
   return (
     <section className={styles.section}>
       <div className="container">
@@ -78,19 +77,48 @@ export default function HomePage() {
               categories={['Всі', ...categories]}
             />
 
-            <ProductList
-              activeCategory={activeCategory}
-              searchQuery={searchQuery}
-              products={productsData?.products || []}
-            />
+            {hasNoProducts ? (
+              <div className={styles.notFound}>
+                <div className={styles.notFoundIcon}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="64"
+                    height="64"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#213538"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+                  </svg>
+                </div>
+                <h2 className={styles.notFoundTitle}>Товари не знайдено</h2>
+                <p className={styles.notFoundDescription}>              
+                  Нам не вдалося знайти жодного елемента, що відповідає вашому запиту.
+                  <br />
+                  Будь ласка, спробуйте інші ключові слова.
+                </p>
+              </div>
+            ) : (
+              <>
+                <ProductList
+                  activeCategory={activeCategory}
+                  searchQuery={searchQuery}
+                  products={productsData?.products || []}
+                />
 
-            {productsData && productsData.total > ITEMS_PER_PAGE && (
-              <Pagination
-                totalItems={productsData.total}
-                itemsPerPage={ITEMS_PER_PAGE}
-                currentPage={currentPage}
-                onPageChange={setCurrentPage}
-              />
+                {productsData && productsData.total > ITEMS_PER_PAGE && (
+                  <Pagination
+                    totalItems={productsData.total}
+                    itemsPerPage={ITEMS_PER_PAGE}
+                    currentPage={currentPage}
+                    onPageChange={setCurrentPage}
+                  />
+                )}
+              </>
             )}
           </>
         )}
