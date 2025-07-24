@@ -10,7 +10,7 @@ const Logo = (props: React.SVGProps<SVGSVGElement>) => (
   >
     <text x="5" y="78">
       <tspan className={styles['text__logo-accent']}>БУД</tspan>
-      <tspan className={styles.text__logo}>лідер</tspan>
+      <tspan className={styles.text__logo} dx="5">лідер</tspan>
     </text>
   </svg>
 );
