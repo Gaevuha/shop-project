@@ -22,9 +22,10 @@ interface OutletContextType {
 export default function HomePage() {
   const [activeCategory, setActiveCategory] = useState('Всі');
   const [currentPage, setCurrentPage] = useState(1);
-
   const { searchQuery } = useOutletContext<OutletContextType>();
   const trimmedSearchQuery = searchQuery.trim();
+
+  const [showLoader, setShowLoader] = useState(true);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -60,65 +61,71 @@ export default function HomePage() {
   const isLoading = isLoadingCategories || isLoadingProducts;
   const isError = isErrorCategories || isErrorProducts;
 
+  // Логіка затримки лоадера:
+  useEffect(() => {
+    if (!isLoading) {
+      const timer = setTimeout(() => setShowLoader(false), 1500); // 1.5с затримка
+      return () => clearTimeout(timer);
+    } else {
+      setShowLoader(true);
+    }
+  }, [isLoading]);
+
   if (isError) return <p>❌ Помилка при завантаженні даних</p>;
 
   const hasNoProducts = productsData?.products?.length === 0;
 
+  if (showLoader) return <Loader />;
+
   return (
     <section className={styles.section}>
       <div className="container">
-        {isLoading && <Loader />}
+        <CategoryFilter
+          activeCategory={activeCategory}
+          setActiveCategory={setActiveCategory}
+          categories={['Всі', ...categories]}
+        />
 
-        {!isLoading && (
+        {hasNoProducts ? (
+          <div className={styles.notFound}>
+            <div className={styles.notFoundIcon}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="64"
+                height="64"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#213538"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+              </svg>
+            </div>
+            <h2 className={styles.notFoundTitle}>Товари не знайдено</h2>
+            <p className={styles.notFoundDescription}>
+              Нам не вдалося знайти жодного елемента, що відповідає вашому запиту.
+              <br />
+              Будь ласка, спробуйте інші ключові слова.
+            </p>
+          </div>
+        ) : (
           <>
-            <CategoryFilter
+            <ProductList
               activeCategory={activeCategory}
-              setActiveCategory={setActiveCategory}
-              categories={['Всі', ...categories]}
+              searchQuery={searchQuery}
+              products={productsData?.products || []}
             />
 
-            {hasNoProducts ? (
-              <div className={styles.notFound}>
-                <div className={styles.notFoundIcon}>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="64"
-                    height="64"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#213538"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <circle cx="12" cy="12" r="10" />
-                    <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
-                  </svg>
-                </div>
-                <h2 className={styles.notFoundTitle}>Товари не знайдено</h2>
-                <p className={styles.notFoundDescription}>              
-                  Нам не вдалося знайти жодного елемента, що відповідає вашому запиту.
-                  <br />
-                  Будь ласка, спробуйте інші ключові слова.
-                </p>
-              </div>
-            ) : (
-              <>
-                <ProductList
-                  activeCategory={activeCategory}
-                  searchQuery={searchQuery}
-                  products={productsData?.products || []}
-                />
-
-                {productsData && productsData.total > ITEMS_PER_PAGE && (
-                  <Pagination
-                    totalItems={productsData.total}
-                    itemsPerPage={ITEMS_PER_PAGE}
-                    currentPage={currentPage}
-                    onPageChange={setCurrentPage}
-                  />
-                )}
-              </>
+            {productsData && productsData.total > ITEMS_PER_PAGE && (
+              <Pagination
+                totalItems={productsData.total}
+                itemsPerPage={ITEMS_PER_PAGE}
+                currentPage={currentPage}
+                onPageChange={setCurrentPage}
+              />
             )}
           </>
         )}

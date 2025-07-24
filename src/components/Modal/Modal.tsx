@@ -10,7 +10,8 @@ interface ModalProps {
 }
 
 export default function Modal({ product, onClose }: ModalProps) {
-  const { addToCart } = useCart();
+  const { addToCart, removeFromCart, isInCart } = useCart();
+  const inCart = isInCart(product.id);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -26,32 +27,21 @@ export default function Modal({ product, onClose }: ModalProps) {
     };
   }, [onClose]);
 
-  const handleAddToCart = () => {
-    addToCart(product);
-    onClose();
+  const handleCartClick = () => {
+    if (inCart) {
+      removeFromCart(product.id);
+    } else {
+      addToCart(product);
+    }
   };
 
   return ReactDOM.createPortal(
-    <div
-      className={`${styles.modal} ${styles['modal--is-open']}`}
-      onClick={onClose}
-    >
-      <div
-        className={styles.modal__content}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          className={styles.modal__closeBtn}
-          onClick={onClose}
-          type="button"
-        ></button>
+    <div className={`${styles.modal} ${styles['modal--is-open']}`} onClick={onClose}>
+      <div className={styles.modal__content} onClick={(e) => e.stopPropagation()}>
+        <button className={styles.modal__closeBtn} onClick={onClose} type="button"></button>
 
         <div className={styles.modalProduct}>
-          <img
-            className={styles.modalProduct__img}
-            src={product.thumbnail}
-            alt={product.description}
-          />
+          <img className={styles.modalProduct__img} src={product.thumbnail} alt={product.description} />
           <div className={styles.modalProduct__content}>
             <p className={styles.modalProduct__title}>{product.title}</p>
             <ul className={styles.modalProduct__tags}>
@@ -59,34 +49,17 @@ export default function Modal({ product, onClose }: ModalProps) {
               <li className={styles.modalProduct__tag}>{product.brand}</li>
             </ul>
             <p className={styles.modalProduct__description}>{product.description}</p>
-            <p className={styles.modalProduct__shippingInformation}>
-              Shipping: Ships overnight
-            </p>
-            <p className={styles.modalProduct__returnPolicy}>
-              Return Policy: No return policy
-            </p>
-            <p className={styles.modalProduct__price}>
-              Price: {product.price} $
-            </p>
-            <button className={styles.modalProduct__buyBtn} type="button">
-              Buy
-            </button>
+            <p className={styles.modalProduct__price}>Price: {product.price} $</p>
           </div>
         </div>
 
         <div className={styles.modalProduct__actions}>
           <button
-            className={`${styles.modalProduct__btn} ${styles['modalProduct__btn--wishlist']}`}
-            type="button"
-          >
-            Add to Wishlist
-          </button>
-          <button
             className={`${styles.modalProduct__btn} ${styles['modalProduct__btn--cart']}`}
             type="button"
-            onClick={handleAddToCart}
+            onClick={handleCartClick}
           >
-            Add to Cart
+            {inCart ? 'Remove from Cart' : 'Add to Cart'}
           </button>
         </div>
       </div>
