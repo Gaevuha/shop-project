@@ -9,7 +9,7 @@ export default function CartPage() {
 
   useEffect(() => {
     if (isInitialized) {
-      const timer = setTimeout(() => setShowLoader(false), 1500); // Затримка 1.5с
+      const timer = setTimeout(() => setShowLoader(false), 1000); // Затримка 1.5с
       return () => clearTimeout(timer);
     }
   }, [isInitialized]);
@@ -20,7 +20,7 @@ export default function CartPage() {
 
   const hasNoProducts = cartItems.length === 0;
   const totalCount = cartItems.length;
-  const totalPrice = cartItems.reduce((sum, p) => sum + p.price, 0);
+  const totalPrice = cartItems.reduce((sum, p) => sum + p.price, 0).toFixed(2);
 
   return (
     <section className={styles.section}>
@@ -67,7 +67,7 @@ export default function CartPage() {
                     </span>
                   </p>
                   <p className={styles.products__category}>{product.category}</p>
-                  <p className={styles.products__price}>Price: {product.price} $</p>
+                  <p className={styles.products__price}>Price: {product.price} грн.</p>
                 </li>
               ))}
             </ul>
@@ -85,7 +85,7 @@ export default function CartPage() {
                 </li>
                 <li className={styles.cartSummaryItem}>
                   <span className={styles.cartSummaryLabel}>Всього:</span>
-                  <span className={styles.cartSummaryValue}>${totalPrice}</span>
+                  <span className={styles.cartSummaryValue}>{totalPrice}грн.</span>
                 </li>
                 <li className={styles.cartSummaryItem}>
                   <span className={styles.cartSummaryLabel}>Доставка:</span>

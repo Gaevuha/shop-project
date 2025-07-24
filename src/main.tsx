@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './components/App/App';
 import HomePage from './pages/HomePage/HomePage';
 import CartPage from './pages/CartPage/CartPage';
-import WishlistPage from './pages/WishlistPage';
+import WishlistPage from './pages/WishlistPage/WishlistPage';
 import { CartProvider } from './context/CartProvider'; // 🔹 Імпорт провайдера
 import { WishlistProvider } from './context/WishlistProvider';
 const queryClient = new QueryClient();

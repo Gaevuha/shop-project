@@ -85,3 +85,11 @@ export async function searchUserProducts(searchQuery: string, currentPage = 1): 
   const res = await axios.get<ProductsResponse>('/search', { params });
   return res.data;
 }
+
+/**
+ * Завантажити товари по масиву ID
+ */
+export async function fetchProductsByIds(ids: number[]): Promise<Product[]> {
+  const promises = ids.map(id => fetchProductById(id));
+  return Promise.all(promises);
+}

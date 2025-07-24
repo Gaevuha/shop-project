@@ -1,39 +1,67 @@
-import React, { useState, useEffect, type ReactNode } from 'react';
-import { CartContext } from './cartContext';
+// src/context/CartProvider.tsx
+import { useState, useEffect } from 'react';
+import { CartContext } from '../context/cartContext';
 import type { Product } from '../types/product';
 
-interface CartProviderProps {
-  children: ReactNode;
-}
+const CART_KEY = 'cart';
 
-export function CartProvider({ children }: CartProviderProps) {
+export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cartItems, setCartItems] = useState<Product[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    const storedCart = localStorage.getItem('cart');
-    if (storedCart) {
-      setCartItems(JSON.parse(storedCart));
+    const stored = localStorage.getItem(CART_KEY);
+    if (stored) {
+      try {
+        setCartItems(JSON.parse(stored));
+      } catch {
+        console.warn('Invalid cart in localStorage');
+      }
     }
-    setIsInitialized(true); // лише тут!
+    setIsInitialized(true);
   }, []);
 
   useEffect(() => {
     if (isInitialized) {
-      localStorage.setItem('cart', JSON.stringify(cartItems));
+      localStorage.setItem(CART_KEY, JSON.stringify(cartItems));
     }
   }, [cartItems, isInitialized]);
 
-    // ✅ Додаємо функцію
   const addToCart = (product: Product) => {
-    setCartItems(prevItems => {
-      const exists = prevItems.some(p => p.id === product.id);
-      return exists ? prevItems : [...prevItems, product];
-    });
+    if (!cartItems.find(item => item.id === product.id)) {
+      setCartItems(prev => [...prev, product]);
+    }
   };
 
+  const removeFromCart = (id: number) => {
+    setCartItems(prev => prev.filter(p => p.id !== id));
+  };
+
+  const isInCart = (id: number) => {
+    return cartItems.some(p => p.id === id);
+  };
+
+  const clearCart = () => {
+    setCartItems([]);
+  };
+
+  const totalCount = cartItems.length;
+  const totalPrice = cartItems.reduce((sum, p) => sum + p.price, 0);
+
   return (
-    <CartContext.Provider value={{ cartItems, setCartItems, isInitialized, addToCart }}>
+    <CartContext.Provider
+      value={{
+        cartItems,
+        setCartItems,
+        isInitialized,
+        addToCart,
+        removeFromCart,
+        isInCart,
+        clearCart,
+        totalCount,
+        totalPrice,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );

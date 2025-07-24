@@ -1,41 +1,57 @@
-import { useState } from 'react';
-import type { ReactNode } from 'react';
-import type { Product } from '../types/product';
-import { WishlistContext } from './wishlistContext';
-import type { WishlistContextType } from '../types/wishlistTypes';
+import React, { useState, useEffect } from 'react';
+import type { ReactNode } from 'react'; 
+import { WishlistContext } from '../context/wishlistContext';
+import type { WishlistContextType } from '../context/wishlistContext';
+
+const WISHLIST_KEY = 'wishlist';
 
 interface WishlistProviderProps {
   children: ReactNode;
 }
 
-export function WishlistProvider({ children }: WishlistProviderProps) {
-  const [wishlistItems, setWishlistItems] = useState<Product[]>([]);
+export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) => {
+  const [wishlist, setWishlist] = useState<number[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  const addToWishlist = (product: Product) => {
-    setWishlistItems(prev => {
-      if (prev.find(item => item.id === product.id)) return prev;
-      return [...prev, product];
-    });
+  useEffect(() => {
+    const stored = localStorage.getItem(WISHLIST_KEY);
+    if (stored) {
+      try {
+        setWishlist(JSON.parse(stored));
+      } catch {
+        console.warn('Invalid wishlist in localStorage');
+      }
+    }
+    setIsInitialized(true);
+  }, []);
+
+  useEffect(() => {
+    if (isInitialized) {
+      localStorage.setItem(WISHLIST_KEY, JSON.stringify(wishlist));
+    }
+  }, [wishlist, isInitialized]);
+
+  const addToWishlist = (id: number) => {
+    setWishlist(prev => (prev.includes(id) ? prev : [...prev, id]));
   };
 
-  const removeFromWishlist = (id: string) => {
-    setWishlistItems(prev => prev.filter(item => item.id.toString() !== id));
+  const removeFromWishlist = (id: number) => {
+    setWishlist(prev => prev.filter(itemId => itemId !== id));
   };
 
-  const clearWishlist = () => {
-    setWishlistItems([]);
-  };
+  const isInWishlist = (id: number) => wishlist.includes(id);
 
-  const contextValue: WishlistContextType = {
-    wishlistItems,
+  const value: WishlistContextType = {
+    wishlist,
     addToWishlist,
     removeFromWishlist,
-    clearWishlist,
+    isInWishlist,
+    isInitialized,
   };
 
   return (
-    <WishlistContext.Provider value={contextValue}>
+    <WishlistContext.Provider value={value}>
       {children}
     </WishlistContext.Provider>
   );
-}
+};

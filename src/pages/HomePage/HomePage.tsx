@@ -64,7 +64,7 @@ export default function HomePage() {
   // Логіка затримки лоадера:
   useEffect(() => {
     if (!isLoading) {
-      const timer = setTimeout(() => setShowLoader(false), 1500); // 1.5с затримка
+      const timer = setTimeout(() => setShowLoader(false), 1000); // 1с затримка
       return () => clearTimeout(timer);
     } else {
       setShowLoader(true);

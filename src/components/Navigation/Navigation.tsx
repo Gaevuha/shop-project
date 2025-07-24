@@ -5,13 +5,13 @@ import styles from './Navigation.module.css';
 
 export default function Nav() {
   const { cartItems } = useCart();
-  const { wishlistItems } = useWishlist();
+  const { wishlist } = useWishlist();
 
   return (
     <ul className={styles.nav__list}>
       <NavItem to="/" label="Дім" end />
       <NavItem to="/cart" label="Кошик" count={cartItems.length} />
-      <NavItem to="/wishlist" label="Перелік бажань" count={wishlistItems.length} />
+      <NavItem to="/wishlist" label="Перелік бажань" count={wishlist.length} />
       {/* інші NavItem */}
     </ul>
   );

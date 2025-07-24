@@ -29,7 +29,7 @@ export default function ProductList({ products }: Props) {
               <span className={styles['products__brand--bold']}>Brand: {product.brand}</span>
             </p>
             <p className={styles.products__category}>Category: {product.category}</p>
-            <p className={styles.products__price}>Price: {product.price} $</p>
+            <p className={styles.products__price}>Price: {product.price} грн.</p>
           </li>
         ))}
       </ul>
